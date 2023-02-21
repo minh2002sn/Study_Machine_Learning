@@ -18,7 +18,7 @@ class LogisticClassifier(object):
 
         mean = 0
         std = 1
-        self.w = np.full(w_shape, -0.02)
+        self.w = np.full(w_shape, 0.0)
         # self.w = np.random.normal(0, np.sqrt(2./np.sum(w_shape)), w_shape)
 
     def feed_forward(self, x):
@@ -34,7 +34,7 @@ class LogisticClassifier(object):
 
         z = np.dot(x, self.w)
 
-        result = 1/(1+np.exp(z))
+        result = 1/(1 + np.exp(-z))
         return result
 
     def compute_loss(self, y, y_hat):
@@ -50,7 +50,6 @@ class LogisticClassifier(object):
         # Compute loss value (a single number)
 
         loss = -np.mean(y*np.log(y_hat) + (1 - y)*np.log(1 - y_hat))
-        # print(loss.shape)
         return loss
 
     def get_grad(self, x, y, y_hat):
@@ -66,7 +65,6 @@ class LogisticClassifier(object):
         # Compute the gradient matrix of w, it has the same size of w
 
         w_grad = np.dot(x.T, (y_hat - y))/(x.shape[0])
-
         return w_grad
 
     def update_weight(self, grad, learning_rate):
@@ -93,7 +91,7 @@ class LogisticClassifier(object):
         # [TODO 1.9]
         # Update w using SGD with momentum
 
-        momentum = momentum_rate*momentum - learning_rate*grad
+        momentum = momentum_rate*momentum + learning_rate*grad
 
         self.w = self.w - momentum
 
@@ -294,8 +292,8 @@ if __name__ == "__main__":
     # generate_unit_testcase(train_x.copy(), train_y.copy())
 
     # Normalize our data: choose one of the two methods before training
-    train_x, test_x = normalize_all_pixel(train_x, test_x)
-    # train_x, test_x = normalize_per_pixel(train_x, test_x)
+    # train_x, test_x = normalize_all_pixel(train_x, test_x)
+    train_x, test_x = normalize_per_pixel(train_x, test_x)
 
     # Reshape our data
     # train_x: shape=(2400, 64, 64) -> shape=(2400, 64*64)
@@ -303,9 +301,17 @@ if __name__ == "__main__":
     train_x = reshape2D(train_x)
     test_x = reshape2D(test_x)
 
+    print('\nShape of tran_x and test_x after run reshape2D method')
+    print('train_x''s shape: {}'.format(train_x.shape))
+    print('test_x''s shape: {}'.format(test_x.shape))
+
     # Pad 1 as the last feature of train_x and test_x
     train_x = add_one(train_x)
     test_x = add_one(test_x)
+
+    print('\nShape of tran_x and test_x after run add_one method')
+    print('train_x''s shape: {}'.format(train_x.shape))
+    print('test_x''s shape: {}'.format(test_x.shape))
 
     # Create classifier
     num_feature = train_x.shape[1]
@@ -321,6 +327,7 @@ if __name__ == "__main__":
     plt.ion()
     # tic = time.clock()
     tic = time.perf_counter()
+    counter = 0
     for e in range(num_epoch):
         # tic = time.clock()
         tic = time.perf_counter()
@@ -329,9 +336,8 @@ if __name__ == "__main__":
         grad = bin_classifier.get_grad(train_x, train_y, y_hat)
 
         # Updating weight: choose either normal SGD or SGD with momentum
-        #bin_classifier.update_weight(grad, learning_rate)
-        bin_classifier.update_weight_momentum(
-            grad, learning_rate, momentum, momentum_rate)
+        # bin_classifier.update_weight(grad, learning_rate)
+        bin_classifier.update_weight_momentum(grad, learning_rate, momentum, momentum_rate)
 
         all_loss.append(loss)
 
@@ -342,8 +348,8 @@ if __name__ == "__main__":
             print("Epoch %d: loss is %.5f" % (e+1, loss))
         # toc = time.clock()
         toc = time.perf_counter()
-        print(toc-tic)
+        # print(toc-tic)
 
     y_hat = bin_classifier.feed_forward(test_x)
     test(y_hat, test_y)
-    print(bin_classifier.w);
+    # print(bin_classifier.w)

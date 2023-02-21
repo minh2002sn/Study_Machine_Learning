@@ -46,10 +46,10 @@ if __name__ == "__main__":
 
 
     # [TODO 1.13] Create a feed-forward operator
-    pred = 1/(1 + tf.math.exp(tf.linalg.matmul(x, W)))
+    pred = 1/(1 + tf.math.exp(-tf.linalg.matmul(x, W)))
 
     # [TODO 1.14] Write the cost function
-    cost = -tf.reduce_sum(y*tf.log(pred)+(1-y)*tf.log(1-pred))/num_train
+    cost = -tf.reduce_sum(y*tf.log(pred) + (1 - y)*tf.log(1 - pred))/num_train
     
     # Define hyper-parameters and train-related parameters
     num_epoch = 1000
@@ -87,14 +87,19 @@ if __name__ == "__main__":
             
             all_loss.append(loss)
 
-            if (e % epochs_to_draw == epochs_to_draw-1):
-                print("loss: {}".format(loss));
-                plot_loss(all_loss)
-                plt.show()
-                plt.pause(0.1)
-                print("Epoch %d: loss is %.5f" % (e+1, loss))
+            # if (e % epochs_to_draw == epochs_to_draw-1):
+                # print("loss: {}".format(loss));
+                # plot_loss(all_loss)
+                # plt.show()
+                # plt.pause(0.1)
+                # print("Epoch %d: loss is %.5f" % (e+1, loss))
             toc = time.perf_counter()
             print(toc-tic)
+        print("loss: {}".format(loss));
+        plot_loss(all_loss)
+        plt.show()
+        plt.pause(0.1)
+        print("Epoch %d: loss is %.5f" % (e+1, loss))
         y_hat = sess.run(pred, feed_dict={x: test_x})
         test(y_hat, test_y)
         print(sess.run(W))

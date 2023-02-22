@@ -94,7 +94,7 @@ if __name__ == "__main__":
                 # plt.pause(0.1)
                 # print("Epoch %d: loss is %.5f" % (e+1, loss))
             toc = time.perf_counter()
-            print(toc-tic)
+            # print(toc-tic)
         print("loss: {}".format(loss));
         plot_loss(all_loss)
         plt.show()

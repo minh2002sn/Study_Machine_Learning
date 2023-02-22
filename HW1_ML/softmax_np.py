@@ -256,7 +256,7 @@ if __name__ == "__main__":
         all_train_loss.append(train_loss) 
         all_val_loss.append(val_loss)
         toc = time.perf_counter()
-        print(toc-tic)
+        # print(toc-tic)
         # [TODO 2.6]
         # Propose your own stopping condition here
 

@@ -71,7 +71,8 @@ if __name__ == "__main__":
     with tf.Session() as sess:
 
         sess.run(init)
-
+        print("From this time using learning_rate = {}".format(learning_rate))
+        last_epoch = 0
         for e in range(num_epoch):
             tic = time.perf_counter()
             # [TODO 1.16] Compute loss and update weights here
@@ -86,6 +87,11 @@ if __name__ == "__main__":
             # W = W - learning_rate*tf.math.reduce_mean((pred - y)*x)
             
             all_loss.append(loss)
+
+            if e - last_epoch > 200:
+                learning_rate /= 2
+                print("From this time using learning_rate = {}".format(learning_rate))
+                last_epoch = e
 
             # if (e % epochs_to_draw == epochs_to_draw-1):
                 # print("loss: {}".format(loss));
@@ -102,4 +108,4 @@ if __name__ == "__main__":
         print("Epoch %d: loss is %.5f" % (e+1, loss))
         y_hat = sess.run(pred, feed_dict={x: test_x})
         test(y_hat, test_y)
-        print(sess.run(W))
+        # print(sess.run(W))

@@ -301,17 +301,17 @@ if __name__ == "__main__":
     train_x = reshape2D(train_x)
     test_x = reshape2D(test_x)
 
-    print('\nShape of tran_x and test_x after run reshape2D method')
-    print('train_x''s shape: {}'.format(train_x.shape))
-    print('test_x''s shape: {}'.format(test_x.shape))
+    # print('\nShape of tran_x and test_x after run reshape2D method')
+    # print('train_x''s shape: {}'.format(train_x.shape))
+    # print('test_x''s shape: {}'.format(test_x.shape))
 
     # Pad 1 as the last feature of train_x and test_x
     train_x = add_one(train_x)
     test_x = add_one(test_x)
 
-    print('\nShape of tran_x and test_x after run add_one method')
-    print('train_x''s shape: {}'.format(train_x.shape))
-    print('test_x''s shape: {}'.format(test_x.shape))
+    # print('\nShape of tran_x and test_x after run add_one method')
+    # print('train_x''s shape: {}'.format(train_x.shape))
+    # print('test_x''s shape: {}'.format(test_x.shape))
 
     # Create classifier
     num_feature = train_x.shape[1]
@@ -320,14 +320,15 @@ if __name__ == "__main__":
 
     # Define hyper-parameters and train-related parameters
     num_epoch = 1000
-    learning_rate = 0.001
+    learning_rate = 0.01
     momentum_rate = 0.9
     epochs_to_draw = num_epoch
     all_loss = []
     plt.ion()
-    # tic = time.clock()
+    
+    last_epoch = 0
+    print("From this time using learning_rate = {}".format(learning_rate))
     tic = time.perf_counter()
-    counter = 0
     for e in range(num_epoch):
         # tic = time.clock()
         tic = time.perf_counter()
@@ -346,6 +347,12 @@ if __name__ == "__main__":
             plt.show()
             plt.pause(0.1)
             print("Epoch %d: loss is %.5f" % (e+1, loss))
+
+        if e - last_epoch > 500:
+            learning_rate /= 2
+            print("From this time using learning_rate = {}".format(learning_rate))
+            last_epoch = e
+
         # toc = time.clock()
         toc = time.perf_counter()
         # print(toc-tic)

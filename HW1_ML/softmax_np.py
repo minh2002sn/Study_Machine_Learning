@@ -16,7 +16,8 @@ class SoftmaxClassifier(LogisticClassifier):
         
         :param w_shape: create w with shape w_shape using normal distribution
         """
-        super(SoftmaxClassifier, self).__init__(w_shape)
+        # super(SoftmaxClassifier, self).__init__(w_shape)
+        self.w = np.full(w_shape, 0.0)
 
 
     def softmax(self, x):
@@ -27,22 +28,6 @@ class SoftmaxClassifier(LogisticClassifier):
         """
         # [TODO 2.3]
         # Compute softmax
-
-        
-
-
-
-        return 
-
-
-    def feed_forward(self, x):
-        """feed_forward
-        This function compute the output of your softmax regression model
-        
-        :param x: input
-        """
-        # [TODO 2.3]
-        # Compute a feed forward pass
 
         m, D = x.shape
 
@@ -62,8 +47,20 @@ class SoftmaxClassifier(LogisticClassifier):
 
         for i in range(m):
             y_hat[i] = z_comma[i]/s[i]
-        
+
         return y_hat
+
+
+    def feed_forward(self, x):
+        """feed_forward
+        This function compute the output of your softmax regression model
+        
+        :param x: input
+        """
+        # [TODO 2.3]
+        # Compute a feed forward pass
+
+        return self.softmax(x)
 
 
     def compute_loss(self, y, y_hat):
@@ -230,13 +227,19 @@ if __name__ == "__main__":
     momentum = np.zeros_like(dec_classifier.w)
 
     # Define hyper-parameters and train-related parameters
-    num_epoch = 1000
+    num_epoch = 10000
     learning_rate = 0.01
     momentum_rate = 0.9
     epochs_to_draw = 10
     all_train_loss = []
     all_val_loss = []
     plt.ion()
+
+    min_train_loss = 10000.0
+
+    last_epoch = 0
+
+    print("From this time using learning_rate = {}".format(learning_rate))
 
     for e in range(num_epoch):    
         tic = time.perf_counter()
@@ -260,5 +263,17 @@ if __name__ == "__main__":
         # [TODO 2.6]
         # Propose your own stopping condition here
 
+        if (e - last_epoch) >= 2000:
+            learning_rate /= 2
+            print("From this time using learning_rate = {}".format(learning_rate))
+            last_epoch = e
+        
+        # print("{}\tCurrrent mean: {}".format(e, np.mean(all_val_loss[e])))
+        if np.mean(all_val_loss[e]) > np.mean(all_val_loss[e-1]):
+            print("Epoch = %d" % (e))
+            break
+
+    # print("Loss = %lf" % (np.mean(all_val_loss[-1])))
+    # print(dec_classifier.w)
     y_hat = dec_classifier.feed_forward(test_x)
     test(y_hat, test_y)

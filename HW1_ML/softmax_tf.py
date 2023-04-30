@@ -57,7 +57,7 @@ if __name__ == "__main__":
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=logits))
 
     # Define hyper-parameters and train-related parameters
-    num_epoch = 1000
+    num_epoch = 10000
     # num_epoch = 3347
     learning_rate = 0.01    
 
@@ -78,6 +78,8 @@ if __name__ == "__main__":
 
         sess.run(init)
 
+        last_epoch = 0
+        print("From this time using learning_rate = {}".format(learning_rate))
         for e in range(num_epoch):
             tic = time.perf_counter()
             # [TODO 2.8] Compute losses and update weights here
@@ -90,7 +92,15 @@ if __name__ == "__main__":
             toc = time.perf_counter()
             # print(toc-tic)
             # [TODO 2.11] Define your own stopping condition here 
-          
+            if (e - last_epoch) >= 2000:
+                learning_rate /= 2
+                print("From this time using learning_rate = {}".format(learning_rate))
+                last_epoch = e
+        
+            # print("{}\tCurrrent mean: {}".format(e, np.mean(all_val_loss[e])))
+            if np.mean(all_val_loss[e]) > np.mean(all_val_loss[e-1]):
+                print("Epoch = %d" % (e))
+                break
         
         y_hat = sess.run(pred, feed_dict={x: test_x})
         test(y_hat, test_y)
